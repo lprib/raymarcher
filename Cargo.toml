@@ -4,6 +4,18 @@ version = "0.1.0"
 authors = ["Liam Pribis <jackpribis@gmail.com>"]
 edition = "2018"
 
+[lib]
+name = "common"
+path = "src/lib.rs"
+
+[[bin]]
+name = "raymarch_renderer"
+path = "src/bin/raymarch_renderer/main.rs"
+
+[[bin]]
+name = "slicer"
+path = "src/bin/slicer/main.rs"
+
 [dependencies]
 minifb = "0.16"
 lazy_static = "1.4.0"

@@ -1,5 +1,5 @@
 use num_complex::Complex64;
-use crate::vec3::Vec3;
+use common::vec3::Vec3;
 
 static C: Complex64 = Complex64::new(-0.1, 0.651);
 // static C: Complex64 = Complex64::new(0.0, 0.0);

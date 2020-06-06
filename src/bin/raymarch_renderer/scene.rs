@@ -1,5 +1,5 @@
+use common::vec3::Vec3;
 use crate::scene_object::SceneObject;
-use crate::vec3::Vec3;
 use crate::raymarcher::RayMarcher;
 
 pub type SceneVec = Vec<Box<dyn SceneObject>>;

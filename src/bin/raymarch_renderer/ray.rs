@@ -1,4 +1,4 @@
-use crate::vec3::Vec3;
+use common::vec3::Vec3;
 use crate::scene::{SceneVec, Scene};
 use crate::RayMarcher;
 

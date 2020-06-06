@@ -1,6 +1,5 @@
-use crate::vec3::Vec3;
+use common::vec3::Vec3;
 use crate::scene::{SceneVec, Scene};
-use lazy_static::lazy_static;
 use crate::ray::cast_ray;
 use crate::scene_object::Sphere;
 

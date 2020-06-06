@@ -1,4 +1,4 @@
-use crate::vec3::Vec3;
+use common::vec3::Vec3;
 
 pub trait SceneObject {
     fn distance_to(&self, point: Vec3) -> f64;
