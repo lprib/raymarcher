@@ -1,6 +1,6 @@
 use std::ops::{Mul, Neg, Sub, Add};
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Vec3 {
     pub x: f64,
     pub y: f64,
@@ -8,6 +8,7 @@ pub struct Vec3 {
 }
 
 impl Vec3 {
+    //TODO impl From?
     pub fn from_f64(n: f64) -> Self {
         Vec3 { x: n, y: n, z: n }
     }
