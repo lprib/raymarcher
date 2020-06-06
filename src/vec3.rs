@@ -8,11 +8,6 @@ pub struct Vec3 {
 }
 
 impl Vec3 {
-    //TODO impl From?
-    pub fn from_f64(n: f64) -> Self {
-        Vec3 { x: n, y: n, z: n }
-    }
-
     pub fn magnitude(self) -> f64 {
         self.dot(self).sqrt()
     }
@@ -107,6 +102,19 @@ impl From<(f64, f64, f64)> for Vec3 {
 impl From<(i32, i32, i32)> for Vec3 {
     fn from((x, y, z): (i32, i32, i32)) -> Self {
         Vec3 { x: x as f64, y: y as f64, z: z as f64 }
+    }
+}
+
+impl From<f64> for Vec3 {
+    fn from(n: f64) -> Self {
+        Vec3 { x: n, y: n, z: n }
+    }
+}
+
+impl From<i32> for Vec3 {
+    fn from(n: i32) -> Self {
+        let n = n as f64;
+        Vec3 { x: n, y: n, z: n }
     }
 }
 

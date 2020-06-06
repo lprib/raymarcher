@@ -1,4 +1,4 @@
-use minifb::{Key, Window, WindowOptions, MouseMode};
+use minifb::{Key, Window, WindowOptions};
 use crate::raymarcher::RayMarcher;
 
 mod raymarcher;

@@ -45,7 +45,7 @@ pub fn draw(frame: &mut [u32]) {
         let dist = if dist < 0.0 { 0.0 } else { dist };
         let dist = dist / 4.0;
         let logdist = -dist.ln();
-        *pix = Vec3::from_f64(logdist / 20.0).into();
+        *pix = Vec3::from(logdist / 20.0).into();
         // *pix = Vec3::from_f64(count as f64 / max_iters as f64).into();
         // *pix = if logdist > 13.0 {Vec3::from_f64(1.0).into()} else {Vec3::from_f64(0.0).into()};
     }
@@ -86,8 +86,8 @@ pub fn draw_ray2d(frame: &mut [u32], mouse_x: f64, mouse_y: f64) {
 
         let dist = dist_estimate(x, y);
         let logdist = -dist.ln();
-        *pix = Vec3::from_f64(logdist / 15.0).into();
-        *pix = Vec3::from_f64(dist).into();
+        *pix = Vec3::from(logdist / 15.0).into();
+        *pix = Vec3::from(dist).into();
     }
 
     //march rays

@@ -1,9 +1,8 @@
 use common::vec3::Vec3;
 use crate::scene::{SceneVec, Scene};
-use crate::RayMarcher;
 
-const MAX_STEPS: u32 = 20;
-const HIT_THRESHOLD: f64 = 1.0E-3;
+const MAX_STEPS: u32 = 50;
+const HIT_THRESHOLD: f64 = 1.0E-2;
 
 pub struct RayResult {
     pub len: f64,

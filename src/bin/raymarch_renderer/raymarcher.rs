@@ -28,13 +28,6 @@ pub struct RayMarcher {
 }
 
 impl RayMarcher {
-    const X_MIN: f64 = -VIEW_PLANE_WIDTH * 0.5;
-    const X_MAX: f64 = VIEW_PLANE_WIDTH * 0.5;
-    const Y_MIN: f64 = -VIEW_PLANE_HEIGHT * 0.5;
-    const Y_MAX: f64 = VIEW_PLANE_HEIGHT * 0.5;
-    const CELL_WIDTH: f64 = VIEW_PLANE_WIDTH / (super::WIDTH as f64);
-    const CELL_HEIGHT: f64 = VIEW_PLANE_HEIGHT / (super::HEIGHT as f64);
-
     const CAMERA_POS: Vec3 = Vec3 { x: 2.0, y: 1.0, z: 0.5 };
     const LOOK_AT: Vec3 = Vec3 { x: 0.0, y: 0.0, z: 0.0 };
     const LIGHT_POS: Vec3 = Vec3 {x: 2.0, y: 1.0, z: 1.0};
