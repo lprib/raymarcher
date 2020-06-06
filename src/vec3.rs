@@ -8,6 +8,7 @@ pub struct Vec3 {
 }
 
 impl Vec3 {
+    //TODO impl From?
     pub fn from_f64(n: f64) -> Self {
         Vec3 { x: n, y: n, z: n }
     }

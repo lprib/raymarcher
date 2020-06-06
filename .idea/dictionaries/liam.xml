@@ -2,6 +2,7 @@
   <dictionary name="liam">
     <words>
       <w>lerp</w>
+      <w>raymarch</w>
     </words>
   </dictionary>
 </component>
