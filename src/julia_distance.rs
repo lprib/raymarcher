@@ -1,5 +1,4 @@
 use num_complex::Complex64;
-use std::collections::HashSet;
 use crate::vec3::Vec3;
 
 static C: Complex64 = Complex64::new(-0.1, 0.651);
