@@ -1,11 +1,16 @@
 use minifb::{Key, Window, WindowOptions};
 use crate::raymarcher::RayMarcher;
+use crate::julia::Julia;
+use cgmath::Quaternion;
+use crate::scene_object::Sphere;
+use crate::sectioned::{ZSectioned};
 
 mod raymarcher;
 mod scene;
 mod scene_object;
 mod ray;
 mod julia;
+mod sectioned;
 
 const WIDTH: usize = 256;
 const HEIGHT: usize = 256;
@@ -23,7 +28,24 @@ fn main() {
         },
     ).unwrap();
 
-    let raymarcher = RayMarcher::new();
+    // let raymarcher = RayMarcher {
+    //     object: Julia {
+    //         c: Quaternion::new(-1.0, 0.2, 0.0, 0.0),
+    //         w: 0.0,
+    //         size: 2.0,
+    //     }
+    // };
+
+    let raymarcher = RayMarcher {
+        object: ZSectioned {
+            z: 0.0,
+            object: Julia {
+                c: Quaternion::new(-1.0, 0.2, 0.0, 0.0),
+                w: 0.0,
+                size: 2.0,
+            },
+        }
+    };
 
     window.limit_update_rate(Some(std::time::Duration::from_micros(16600)));
 

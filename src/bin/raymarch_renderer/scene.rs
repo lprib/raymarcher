@@ -1,5 +1,6 @@
 use common::vec3::Vec3;
 use crate::scene_object::SceneObject;
+use std::sync::{Arc, Mutex};
 
 pub type SceneVec = Vec<Box<dyn SceneObject>>;
 

@@ -1,52 +1,29 @@
 use common::vec3::Vec3;
 use crate::scene::{SceneVec, Scene};
 use crate::ray::cast_ray;
-use crate::scene_object::Sphere;
+use crate::scene_object::{Sphere, SceneObject};
 use crate::julia::Julia;
 use cgmath::Quaternion;
-use crate::{WIDTH, HEIGHT};
+use rayon::prelude::*;
 
-const VIEW_PLANE_DIST: f64 = 40.0;
-const VIEW_PLANE_WIDTH: f64 = 20.0;
-const VIEW_PLANE_HEIGHT: f64 = 20.0;
 
-fn construct_scene() -> SceneVec {
-    vec![
-        // Box::new(Sphere {
-        //     center: (0, 0, 0).into(),
-        //     radius: 0.5,
-        //     color: (1.0, 0.0, 0.0).into(),
-        // }),
-        Box::new(Julia {
-            c: Quaternion::new(-1.0,0.2,0.0,0.0),
-            w: 0.0,
-            size: 2.0
-        })
-    ]
+pub struct RayMarcher<T: SceneObject> {
+    pub(crate) object: T
 }
 
-
-pub struct RayMarcher {
-    scene: SceneVec
-}
-
-impl RayMarcher {
+impl<T: SceneObject> RayMarcher<T> {
     const CAMERA_POS: Vec3 = Vec3 { x: 4.0, y: 4.0, z: 4.0 };
     const LOOK_AT: Vec3 = Vec3 { x: 0.0, y: 0.0, z: 0.0 };
-    const LIGHT_POS: Vec3 = Vec3 {x: 4.0, y: 4.0, z: 2.0};
-    const BG_COLOR: Vec3 = Vec3 {x: 0.0, y: 0.0, z:0.0};
-
-    pub fn new() -> Self {
-        RayMarcher { scene: construct_scene() }
-    }
+    const LIGHT_POS: Vec3 = Vec3 { x: 4.0, y: 4.0, z: 2.0 };
+    const BG_COLOR: Vec3 = Vec3 { x: 0.0, y: 0.0, z: 0.0 };
 
     pub fn draw(&self, frame: &mut [u32]) {
         // dbg!(self.scene.distance_to((4, 4, 4).into()));
         // dbg!(self.scene.distance_to((-4, -4, -4).into()));
         // self.trace((4, 4, 4).into(), Vec3::from((-1, -1, -1)).normalized());
-        for (i, pix) in frame.iter_mut().enumerate() {
+        frame.par_iter_mut().enumerate().for_each(|(i, pix)| {
             *pix = self.send_pixel_ray(i).into()
-        }
+        });
         println!("frame");
     }
 
@@ -54,19 +31,19 @@ impl RayMarcher {
         let x = buffer_idx % super::WIDTH;
         let y = buffer_idx / super::HEIGHT;
 
-        let ray_dir = Self::camera_ray_dir(x, y, RayMarcher::CAMERA_POS, RayMarcher::LOOK_AT, 1.0);
-        self.trace(RayMarcher::CAMERA_POS, ray_dir)
+        let ray_dir = Self::camera_ray_dir(x, y, Self::CAMERA_POS, Self::LOOK_AT, 1.0);
+        self.trace(Self::CAMERA_POS, ray_dir)
     }
 
     fn trace(&self, point: Vec3, dir: Vec3) -> Vec3 {
-        let res = cast_ray(&self.scene, point, dir);
+        let res = cast_ray(&self.object, point, dir);
         match res {
             Some(res) => {
-                let norm = self.scene.normal(res.hit_point);
-                let s_dot_n = norm.dot((RayMarcher::LIGHT_POS - res.hit_point).normalized());
-                s_dot_n * self.scene[res.hit_index].get_color()
+                let norm = self.object.normal(res.hit_point);
+                let s_dot_n = norm.dot((Self::LIGHT_POS - res.hit_point).normalized());
+                s_dot_n * self.object.get_color()
             }
-            None => RayMarcher::BG_COLOR
+            None => Self::BG_COLOR
         }
     }
 
