@@ -13,16 +13,17 @@ pub trait Scene {
 
 impl Scene for SceneVec {
     fn distance_to(&self, point: Vec3) -> (usize, f64) {
-        self
-            .iter()
-            .map(|object| object.distance_to(point))
-            .enumerate()
-            // only minimize the distance, not the object index:
-            .min_by(|a, b|
-                a.1.partial_cmp(&b.1)
-                    .expect("NaN in distance function")
-            )
-            .expect("No minimum distance found for distance functions")
+        (0, self[0].distance_to(point))
+        // self
+        //     .iter()
+        //     .map(|object| object.distance_to(point))
+        //     .enumerate()
+        //     // only minimize the distance, not the object index:
+        //     .min_by(|a, b|
+        //         a.1.partial_cmp(&b.1)
+        //             .expect("NaN in distance function")
+        //     )
+        //     .expect("No minimum distance found for distance functions")
     }
 
     fn normal(&self, p: Vec3) -> Vec3 {

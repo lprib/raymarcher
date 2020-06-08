@@ -5,9 +5,10 @@ mod raymarcher;
 mod scene;
 mod scene_object;
 mod ray;
+mod julia;
 
-const WIDTH: usize = 512;
-const HEIGHT: usize = 512;
+const WIDTH: usize = 256;
+const HEIGHT: usize = 256;
 
 fn main() {
     let mut buffer: Vec<u32> = vec![0; WIDTH * HEIGHT];
