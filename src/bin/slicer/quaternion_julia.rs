@@ -5,7 +5,7 @@ type Quaternion64 = Quaternion<f64>;
 
 static C: Quaternion64 = Quaternion::new(-0.2,0.6,0.2,0.2);
 
-const JULIA_MAX_ITERS: i32 = 30;
+const MAX_ITERATIONS: i32 = 30;
 const COMPLEX_PLANE_SIZE: f64 = 4.0;
 // scale the distance estimate by this amount to less marches of the ray are needed.
 const JULIA_DISTANCE_MULTIPLIER: f64 = 100.0;
@@ -28,11 +28,11 @@ fn get_val(z: Quaternion64) -> f64 {
             break;
         }
         count += 1;
-        if count > JULIA_MAX_ITERS {
+        if count > MAX_ITERATIONS {
             break;
         }
     }
-    count as f64 / JULIA_MAX_ITERS as f64
+    count as f64 / MAX_ITERATIONS as f64
 }
 
 fn get_val_dist_estimate(z: Quaternion64) -> f64 {
@@ -50,7 +50,7 @@ fn get_val_dist_estimate(z: Quaternion64) -> f64 {
             break;
         }
         count += 1;
-        if count > JULIA_MAX_ITERS {
+        if count > MAX_ITERATIONS {
             break;
         }
     }
@@ -74,12 +74,12 @@ fn get_val_mandelbrot(pos: Quaternion64) -> f64 {
             break;
         }
         count += 1;
-        if count > JULIA_MAX_ITERS {
+        if count > MAX_ITERATIONS {
             break;
         }
     }
 
-    count as f64 / JULIA_MAX_ITERS as f64
+    count as f64 / MAX_ITERATIONS as f64
 }
 
 pub fn draw_quaternion_julia(frame: &mut [u32], mouse_x: f64, mouse_y: f64) {
@@ -170,7 +170,7 @@ fn distance_to2(point: Vec3) -> f64 {
             break;
         }
         count += 1;
-        if count > JULIA_MAX_ITERS {
+        if count > MAX_ITERATIONS {
             break;
         }
     }

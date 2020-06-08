@@ -1,6 +1,6 @@
 use common::vec3::Vec3;
 
-const EPS: f64 = 1.0E-8;
+const EPS: f64 = 1.0E-10;
 
 pub trait SceneObject: Send + Sync {
     fn distance_to(&self, point: Vec3) -> f64;

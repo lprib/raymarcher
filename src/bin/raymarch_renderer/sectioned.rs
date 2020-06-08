@@ -10,7 +10,7 @@ impl<T: SceneObject> SceneObject for ZSectioned<T> {
     fn distance_to(&self, point: Vec3) -> f64 {
         if point.z > self.z {
             let dist_to_cutaway = point.z - self.z;
-            let cutaway_projection_point = Vec3::from((point.x, point.y, point.z - self.z));
+            let cutaway_projection_point = Vec3::from((point.x, point.y, point.z + self.z));
             let dist_at_cutaway = self.object.distance_to(cutaway_projection_point);
             (dist_to_cutaway * dist_at_cutaway + dist_to_cutaway * dist_to_cutaway).sqrt()
         } else {

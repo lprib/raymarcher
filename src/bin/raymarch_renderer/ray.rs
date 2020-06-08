@@ -2,15 +2,15 @@ use common::vec3::Vec3;
 use crate::scene::{SceneVec, Scene};
 use crate::scene_object::SceneObject;
 
-const MAX_STEPS: u32 = 200;
-const HIT_THRESHOLD: f64 = 1E-3;
+const MAX_STEPS: u32 = 500;
+const HIT_THRESHOLD: f64 = 1E-4;
 
 pub struct RayResult {
     pub len: f64,
     pub hit_point: Vec3,
 }
 
-pub fn cast_ray<T: SceneObject>(object: &T, point: Vec3, dir: Vec3) -> Option<RayResult> {
+pub fn cast_ray<T: SceneObject>(object: &T, point: Vec3, dir: Vec3, backplanes: Vec3) -> Option<RayResult> {
     let dir = dir.normalized();
     let mut current_point = point.clone();
     let mut iterations = 0u32;
@@ -30,6 +30,12 @@ pub fn cast_ray<T: SceneObject>(object: &T, point: Vec3, dir: Vec3) -> Option<Ra
         }
 
         if iterations > MAX_STEPS {
+            return None;
+        }
+
+        if current_point.x.abs() > backplanes.x ||
+            current_point.y.abs() > backplanes.y ||
+            current_point.z.abs() > backplanes.z {
             return None;
         }
     }
