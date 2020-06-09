@@ -1,9 +1,13 @@
+use std::time::Duration;
 use minifb::{Key, Window, WindowOptions};
+use cgmath::Quaternion;
+
 use crate::raymarcher::RayMarcher;
 use crate::fractals::{Julia, Mandelbulb};
-use cgmath::Quaternion;
 use crate::scene_object::Sphere;
 use crate::sectioned::{ZSectioned};
+use std::path::Path;
+use std::process::exit;
 
 mod raymarcher;
 mod scene;
@@ -12,30 +16,23 @@ mod ray;
 mod fractals;
 mod sectioned;
 
-const WIDTH: usize = 1024;
-const HEIGHT: usize = 1024;
+const WIDTH: usize = 512;
+const HEIGHT: usize = 512;
 
 fn main() {
     let mut buffer: Vec<u32> = vec![0; WIDTH * HEIGHT];
 
-    let mut window = Window::new(
-        "Raymarcher",
-        WIDTH,
-        HEIGHT,
-        WindowOptions {
-            resize: true,
-            ..Default::default()
-        },
-    ).unwrap();
-
     let mut raymarcher = RayMarcher {
         object: Julia {
-            c: Quaternion::new(-0.445,0.339,-0.0889,-0.562),
-            w: 0.0,
+            c: Quaternion::new(-0.125, -0.256, 0.847, 0.0895),
             size: 1.0,
         },
-        row: 0
+        row: 0,
     };
+    render_images();
+
+    // raymarcher.render_to_image(Path::new("./image.png"), 0.95);
+
     //
     // let raymarcher = RayMarcher {
     //     object: Mandelbulb {
@@ -63,18 +60,46 @@ fn main() {
     //     row: 0
     // };
 
-    window.limit_update_rate(Some(std::time::Duration::from_micros(16600)));
+    exit(0);
+
+    let mut window = Window::new(
+        "Raymarcher",
+        WIDTH,
+        HEIGHT,
+        WindowOptions {
+            resize: true,
+            ..Default::default()
+        },
+    ).unwrap();
+
+    window.limit_update_rate(Some(Duration::from_micros(16600)));
     let mut window_size = window.get_size();
 
     while window.is_open() && !window.is_key_down(Key::Escape) {
-        raymarcher.draw(buffer.as_mut_slice());
+        raymarcher.draw(buffer.as_mut_slice(), 0.0);
         window.update_with_buffer(&buffer, WIDTH, HEIGHT).unwrap();
-
-        let new_size = window.get_size();
-        if window_size != new_size {
-            raymarcher.restart_render();
-        }
-        window_size = new_size;
     }
 }
 
+fn render_images() {
+    let mut raymarcher = RayMarcher {
+        object: Julia {
+            c: Quaternion::new(-0.125, -0.256, 0.847, 0.0895),
+            size: 1.0,
+        },
+        row: 0,
+    };
+
+    let mut t = 0.0;
+    let mut i = 0;
+
+    while t < 0.95 {
+        let image_name = format!("./images/image{}.png", i);
+        let path = Path::new(&image_name);
+        raymarcher.render_to_image(path, t);
+
+        i += 1;
+        t += 0.02;
+        println!("rendered image {}", image_name);
+    }
+}

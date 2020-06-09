@@ -10,21 +10,21 @@ pub struct RayResult {
     pub hit_point: Vec3,
 }
 
-pub fn cast_ray<T: SceneObject>(object: &T, point: Vec3, dir: Vec3, backplanes: Vec3) -> Option<RayResult> {
+pub fn cast_ray<O: SceneObject>(object: &O, point: Vec3, dir: Vec3, backplanes: Vec3, t: f64) -> Option<RayResult> {
     let dir = dir.normalized();
     let mut current_point = point.clone();
     let mut iterations = 0u32;
-    let mut t = 0.0;
+    let mut ray_len = 0.0;
 
     loop {
         // let (hit_index, radius) = scene.distance_to(current_point);
-        let radius = object.distance_to(current_point);
-        t += radius;
+        let radius = object.distance_to(current_point, t);
+        ray_len += radius;
         iterations += 1;
-        current_point = point + t * dir;
+        current_point = point + ray_len * dir;
         if radius < HIT_THRESHOLD {
             return Some(RayResult {
-                len: t,
+                len: ray_len,
                 hit_point: current_point,
             });
         }

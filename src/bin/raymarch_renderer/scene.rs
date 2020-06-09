@@ -8,13 +8,13 @@ const EPS: f64 = 1.0E-8;
 
 pub trait Scene {
     //returns index into scene vector of the closest object, and the distance to that object
-    fn distance_to(&self, point: Vec3) -> (usize, f64);
-    fn normal(&self, point: Vec3) -> Vec3;
+    fn distance_to(&self, point: Vec3, t: f64) -> (usize, f64);
+    fn normal(&self, point: Vec3, t: f64) -> Vec3;
 }
 
 impl Scene for SceneVec {
-    fn distance_to(&self, point: Vec3) -> (usize, f64) {
-        (0, self[0].distance_to(point))
+    fn distance_to(&self, point: Vec3, t: f64) -> (usize, f64) {
+        (0, self[0].distance_to(point, t))
         // self
         //     .iter()
         //     .map(|object| object.distance_to(point))
@@ -27,13 +27,13 @@ impl Scene for SceneVec {
         //     .expect("No minimum distance found for distance functions")
     }
 
-    fn normal(&self, p: Vec3) -> Vec3 {
-        let (_, x_plus) = self.distance_to((p.x + EPS, p.y, p.z).into());
-        let (_, x_minus) = self.distance_to((p.x - EPS, p.y, p.z).into());
-        let (_, y_plus) = self.distance_to((p.x, p.y + EPS, p.z).into());
-        let (_, y_minus) = self.distance_to((p.x, p.y - EPS, p.z).into());
-        let (_, z_plus) = self.distance_to((p.x, p.y, p.z + EPS).into());
-        let (_, z_minus) = self.distance_to((p.x, p.y, p.z - EPS).into());
+    fn normal(&self, p: Vec3, t: f64) -> Vec3 {
+        let (_, x_plus) = self.distance_to((p.x + EPS, p.y, p.z).into(), t);
+        let (_, x_minus) = self.distance_to((p.x - EPS, p.y, p.z).into(), t);
+        let (_, y_plus) = self.distance_to((p.x, p.y + EPS, p.z).into(), t);
+        let (_, y_minus) = self.distance_to((p.x, p.y - EPS, p.z).into(), t);
+        let (_, z_plus) = self.distance_to((p.x, p.y, p.z + EPS).into(), t);
+        let (_, z_minus) = self.distance_to((p.x, p.y, p.z - EPS).into(), t);
 
         let x = x_plus - x_minus;
         let y = y_plus - y_minus;

@@ -1,4 +1,5 @@
 use std::ops::{Mul, Neg, Sub, Add};
+use image::Rgba;
 
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Vec3 {
@@ -125,6 +126,17 @@ impl From<Vec3> for u32 {
             to_color_byte(vec.x),
             to_color_byte(vec.y),
             to_color_byte(vec.z)
+        ])
+    }
+}
+
+impl From<Vec3> for Rgba<u8> {
+    fn from(vec: Vec3) -> Self {
+        Rgba([
+            to_color_byte(vec.x),
+            to_color_byte(vec.y),
+            to_color_byte(vec.z),
+            0xFF
         ])
     }
 }

@@ -5,31 +5,34 @@ use crate::scene_object::{Sphere, SceneObject};
 use crate::fractals::Julia;
 use cgmath::Quaternion;
 use rayon::prelude::*;
+use std::path::Path;
+use image::{DynamicImage, GenericImage, ImageFormat, Rgba};
+use crate::WIDTH;
 
 const SHININESS: f64 = 50.0;
 
-pub struct RayMarcher<T: SceneObject> {
-    pub object: T,
+pub struct RayMarcher<O: SceneObject> {
+    pub object: O,
     pub row: usize,
 }
 
-impl<T: SceneObject> RayMarcher<T> {
+impl<O: SceneObject> RayMarcher<O> {
     const CAMERA_POS: Vec3 = Vec3 { x: 2.0, y: 4.0, z: 4.0 };
     const LOOK_AT: Vec3 = Vec3 { x: 0.0, y: 0.0, z: 0.0 };
     const LIGHT_POS: Vec3 = Vec3 { x: 2.0, y: 4.0, z: 4.0 };
     const BG_COLOR: Vec3 = Vec3 { x: 0.0, y: 0.0, z: 0.0 };
-    const ZOOM: f64 = 4.0;
+    const ZOOM: f64 = 3.0;
     const AA_LEVEL: i32 = 4;
     const BACKPLANES: Vec3 = Vec3 { x: 3.0, y: 3.0, z: 3.0 };
 
-    pub fn draw(&mut self, frame: &mut [u32]) {
+    pub fn draw(&mut self, frame: &mut [u32], t: f64) {
         frame
             .par_iter_mut()
             .enumerate()
             .skip(self.row * super::WIDTH)
             .take(super::WIDTH)
             .for_each(|(i, pix)| {
-                *pix = self.send_pixel_ray(i).into()
+                *pix = self.send_pixel_ray(i, t).into()
             });
 
         self.row += 1;
@@ -43,7 +46,7 @@ impl<T: SceneObject> RayMarcher<T> {
     }
 
 
-    fn send_pixel_ray(&self, buffer_idx: usize) -> Vec3 {
+    fn send_pixel_ray(&self, buffer_idx: usize, t: f64) -> Vec3 {
         let x = buffer_idx % super::WIDTH;
         let y = buffer_idx / super::HEIGHT;
 
@@ -58,7 +61,7 @@ impl<T: SceneObject> RayMarcher<T> {
                     Self::LOOK_AT,
                     Self::ZOOM,
                 );
-                pixel_sum = pixel_sum + self.trace(Self::CAMERA_POS, ray_dir);
+                pixel_sum = pixel_sum + self.trace(Self::CAMERA_POS, ray_dir, t);
             }
         }
         (1.0 / (Self::AA_LEVEL * Self::AA_LEVEL) as f64) * pixel_sum
@@ -67,12 +70,12 @@ impl<T: SceneObject> RayMarcher<T> {
         // self.trace(Self::CAMERA_POS, ray_dir)
     }
 
-    fn trace(&self, point: Vec3, dir: Vec3) -> Vec3 {
-        let res = cast_ray(&self.object, point, dir, Self::BACKPLANES);
+    fn trace(&self, point: Vec3, dir: Vec3, t: f64) -> Vec3 {
+        let res = cast_ray(&self.object, point, dir, Self::BACKPLANES, t);
         match res {
             Some(res) => {
                 let light_vec = (Self::LIGHT_POS - res.hit_point).normalized();
-                let norm = self.object.normal(res.hit_point);
+                let norm = self.object.normal(res.hit_point, t);
                 let s_dot_n = norm.dot(light_vec);
 
                 //specularity
@@ -82,7 +85,7 @@ impl<T: SceneObject> RayMarcher<T> {
                 let specular_term = r_dot_v.powf(SHININESS);
                 let specular_term = if r_dot_v > 0.0 { specular_term } else { 0.0 };
 
-                s_dot_n * self.object.get_color() + specular_term * Vec3::from((1, 1, 1))
+                s_dot_n * self.object.get_color(t) + specular_term * Vec3::from((1, 1, 1))
             }
             None => Self::BG_COLOR
         }
@@ -100,5 +103,26 @@ impl<T: SceneObject> RayMarcher<T> {
         let pix_pos = zoomed_cam_pos + u * right_vec + v * down_vec;
         let dir = pix_pos - cam_pos;
         dir.normalized()
+    }
+
+    pub fn render_to_image(&self, file: &Path, t: f64) {
+        let mut image = DynamicImage::new_rgb8(
+            super::WIDTH as u32,
+            super::HEIGHT as u32,
+        );
+
+        let mut buf = vec![Rgba([0, 0, 0, 0]); super::WIDTH * super::HEIGHT];
+        buf.par_iter_mut().enumerate().for_each(|(i, y)| {
+            *y = self.send_pixel_ray(i, t).into();
+        });
+
+        // copy buffer to image
+        for i in 0..buf.len() {
+            let x = (i % super::WIDTH) as u32;
+            let y = (i / super::WIDTH) as u32;
+            image.put_pixel(x, y, buf[i]);
+        }
+
+        image.save_with_format(file, ImageFormat::Png);
     }
 }
