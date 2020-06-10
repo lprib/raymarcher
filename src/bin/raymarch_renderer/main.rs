@@ -16,15 +16,15 @@ mod ray;
 mod fractals;
 mod sectioned;
 
-const WIDTH: usize = 512;
-const HEIGHT: usize = 512;
+const WIDTH: usize = 1024;
+const HEIGHT: usize = 1024;
 
 fn main() {
     let mut buffer: Vec<u32> = vec![0; WIDTH * HEIGHT];
 
     let mut raymarcher = RayMarcher {
         object: Julia {
-            c: Quaternion::new(-0.125, -0.256, 0.847, 0.0895),
+            c: Quaternion::new(-1.0,0.2,0.0,0.0),
             size: 1.0,
         },
         row: 0,
@@ -73,10 +73,9 @@ fn main() {
     ).unwrap();
 
     window.limit_update_rate(Some(Duration::from_micros(16600)));
-    let mut window_size = window.get_size();
 
     while window.is_open() && !window.is_key_down(Key::Escape) {
-        raymarcher.draw(buffer.as_mut_slice(), 0.0);
+        raymarcher.draw(buffer.as_mut_slice(), 0.66);
         window.update_with_buffer(&buffer, WIDTH, HEIGHT).unwrap();
     }
 }
@@ -84,7 +83,7 @@ fn main() {
 fn render_images() {
     let mut raymarcher = RayMarcher {
         object: Julia {
-            c: Quaternion::new(-0.125, -0.256, 0.847, 0.0895),
+            c: Quaternion::new(-1.0,0.2,0.0,0.0),
             size: 1.0,
         },
         row: 0,
@@ -93,13 +92,13 @@ fn render_images() {
     let mut t = 0.0;
     let mut i = 0;
 
-    while t < 0.95 {
+    while t < 0.66 {
         let image_name = format!("./images/image{}.png", i);
         let path = Path::new(&image_name);
         raymarcher.render_to_image(path, t);
 
         i += 1;
-        t += 0.02;
+        t += 0.005;
         println!("rendered image {}", image_name);
     }
 }
