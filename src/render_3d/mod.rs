@@ -5,9 +5,11 @@ use std::path::Path;
 use std::process::exit;
 
 use raymarcher::{RayMarcher, RayMarcherConfig, ImageRenderConfiguration};
-use fractals::{Julia, Mandelbulb};
+use fractals::{Julia, Mandelbrot};
 use scene_object::Sphere;
 use sectioned::{ZSectioned};
+use crate::render_3d::fractals::Mandelbulb;
+use crate::render_3d::scene_object::SceneObject;
 
 pub mod raymarcher;
 mod scene;
@@ -16,25 +18,16 @@ mod ray;
 pub mod fractals;
 mod sectioned;
 
-pub fn main(width: usize, height: usize, config: RayMarcherConfig, c: Quaternion<f64>) {
+pub fn main<O: SceneObject>(
+    width: usize,
+    height: usize,
+    config: RayMarcherConfig, object: O) {
     let mut buffer: Vec<u32> = vec![0; width * height];
 
     let mut raymarcher = RayMarcher {
-        object: Julia {
-            c,
-            size: 1.0,
-        },
+        object,
         config,
     };
-
-    // raymarcher.render_images(ImageRenderConfiguration {
-    //     width: 128,
-    //     height: 128,
-    //     t_start: 0.0,
-    //     t_stop: 1.0,
-    //     t_step: 0.1,
-    //     image_name: |i| format!("./images/test_image{}.png", i),
-    // });
 
     let mut window = Window::new(
         "Raymarcher",

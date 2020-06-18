@@ -3,7 +3,7 @@ use super::scene_object::SceneObject;
 
 pub type SceneVec = Vec<Box<dyn SceneObject>>;
 
-const EPS: f64 = 1.0E-8;
+const EPS: f64 = 1.0E-20;
 
 pub trait Scene {
     //returns index into scene vector of the closest object, and the distance to that object

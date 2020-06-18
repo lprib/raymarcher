@@ -1,6 +1,6 @@
 use crate::vec3::Vec3;
 
-const EPS: f64 = 1.0E-10;
+const EPS: f64 = 1.0E-12;
 
 // T is the varied parameter
 pub trait SceneObject: Send + Sync {

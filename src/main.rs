@@ -3,6 +3,7 @@ use clap::{App, SubCommand, Arg, AppSettings, Values};
 use crate::vec3::Vec3;
 use crate::render_3d::raymarcher::RayMarcherConfig;
 use cgmath::Quaternion;
+use crate::render_3d::fractals::{Julia, Mandelbulb};
 
 mod vec3;
 mod render_3d;
@@ -73,7 +74,7 @@ fn main() {
                 true,
             ))
             .arg(optional_vec3_arg(
-                "backplane-pos",
+                "backplane",
                 "values of x/y/z where rays will be assumed to be a miss (ie. back clipping planes)",
                 "3,3,3",
                 false,
@@ -124,7 +125,7 @@ fn main() {
             background_color: matches.values_of("bg-color").into(),
             camera_zoom: matches.value_of("zoom").into_f64(),
             anti_aliasing_level: matches.value_of("aa-level").into_u32(),
-            backplane_positions: matches.values_of("backplane-pos").into(),
+            backplane_positions: matches.values_of("backplane").into(),
             specular_shininess: matches.value_of("specular-shininess").into_f64(),
             specular_color: matches.values_of("specular-color").into(),
             ..Default::default()
@@ -138,12 +139,19 @@ fn main() {
             c.next().into_f64(),
         );
 
-        let w = matches.value_of("width").into_u32() as usize;
-        let h = matches.value_of("height").into_u32() as usize;
+        let width = matches.value_of("width").into_u32() as usize;
+        let height = matches.value_of("height").into_u32() as usize;
 
-        println!("{:?}", c);
+        let object = Julia {
+            color: matches.values_of("object-color").into(),
+            c
+        };
 
-        render_3d::main(w, h, config, c);
+        let object = Mandelbulb {
+            color: matches.values_of("object-color").into()
+        };
+
+        render_3d::main(width, height, config, object);
     }
 }
 

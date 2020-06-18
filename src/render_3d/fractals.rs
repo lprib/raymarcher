@@ -8,12 +8,9 @@ const JULIA_MAX_ITERS: i32 = 100;
 const COMPLEX_PLANE_SIZE: f64 = 2.0;
 const DISTANCE_ESTIMATE_MULTIPLIER: f64 = 0.5;
 
-const COLOR: Vec3 = Vec3 { x:0.5, y: 0.5, z: 0.5 };
-
 pub struct Julia {
     pub c: Quaternion64,
-    //todo properly implement transformations
-    pub size: f64,
+    pub color: Vec3,
 }
 
 impl SceneObject for Julia {
@@ -38,16 +35,16 @@ impl SceneObject for Julia {
     }
 
     fn get_color(&self, t: f64) -> Vec3 {
-        COLOR
+        self.color
     }
 }
 
-pub struct Mandelbulb {
+pub struct Mandelbrot {
     pub w: f64,
     pub size: f64,
 }
 
-impl SceneObject for Mandelbulb {
+impl SceneObject for Mandelbrot {
     fn distance_to(&self, point: Vec3, _: f64) -> f64 {
         let c = Quaternion64::new(point.x, point.y, point.z, self.w);
         let mut z = Quaternion64::zero();
@@ -71,5 +68,44 @@ impl SceneObject for Mandelbulb {
 
     fn get_color(&self, _: f64) -> Vec3 {
         (0.5, 0.5, 1.0).into()
+    }
+}
+
+pub struct Mandelbulb {
+    pub color: Vec3
+}
+
+
+impl SceneObject for Mandelbulb {
+    fn distance_to(&self, point: Vec3, t: f64) -> f64 {
+        let power = 8.0;
+        let mut z = point;
+        let mut dr = 1.0;
+        let mut r = 0.0;
+
+        for i in 0..JULIA_MAX_ITERS {
+            r = z.magnitude();
+            if r > 4.0 {
+                break;
+            }
+
+            let mut theta = (z.z / r).acos();
+            let mut phi = z.y.atan2(z.x);
+            dr = r.powf(power - 1.0) * power * dr + 1.0;
+
+            let zr = r.powf(power);
+            theta = theta * power;
+            phi = phi * power;
+
+            z = zr * Vec3::from((theta.sin() * phi.cos(), phi.sin() * theta.sin(), theta.cos()));
+
+            z = z + point;
+        }
+
+        0.5 * r.ln() * r / dr
+    }
+
+    fn get_color(&self, t: f64) -> Vec3 {
+        self.color
     }
 }

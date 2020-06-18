@@ -52,10 +52,15 @@ impl<O: SceneObject> RayMarcher<O> {
         let res = cast_ray(&self.object, point, dir, self.config.backplane_positions, t);
         match res {
             Some(res) => {
+                let len = (res.hit_point - self.config.camera_pos).magnitude();
+                let len = len / 5.0 - 0.2;
+                // return (len, len, len).into();
+
                 // if there is a ray hit, do Phong lighting calculations
                 let light_vec = (self.config.light_pos - res.hit_point).normalized();
                 let norm = self.object.normal(res.hit_point, t);
                 let s_dot_n = norm.dot(light_vec);
+                return norm;
 
                 //specularity
                 let reflect_vec = (-light_vec).reflect(norm);
