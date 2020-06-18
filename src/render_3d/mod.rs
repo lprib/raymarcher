@@ -9,19 +9,19 @@ use fractals::{Julia, Mandelbulb};
 use scene_object::Sphere;
 use sectioned::{ZSectioned};
 
-mod raymarcher;
+pub mod raymarcher;
 mod scene;
 mod scene_object;
 mod ray;
-mod fractals;
+pub mod fractals;
 mod sectioned;
 
-pub fn main(width: usize, height: usize, config: RayMarcherConfig) {
+pub fn main(width: usize, height: usize, config: RayMarcherConfig, c: Quaternion<f64>) {
     let mut buffer: Vec<u32> = vec![0; width * height];
 
     let mut raymarcher = RayMarcher {
         object: Julia {
-            c: Quaternion::new(-1.0, 0.2, 0.0, 0.0),
+            c,
             size: 1.0,
         },
         config,

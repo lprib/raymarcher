@@ -125,6 +125,7 @@ impl<O: SceneObject> RayMarcher<O> {
     }
 }
 
+#[derive(Debug)]
 pub struct RayMarcherConfig {
     pub camera_pos: Vec3,
     pub look_at: Vec3,
