@@ -16,8 +16,8 @@ mod ray;
 mod fractals;
 mod sectioned;
 
-const WIDTH: usize = 256;
-const HEIGHT: usize = 256;
+const WIDTH: usize = 512;
+const HEIGHT: usize = 512;
 
 fn main() {
     let mut buffer: Vec<u32> = vec![0; WIDTH * HEIGHT];
@@ -30,41 +30,14 @@ fn main() {
         config: Default::default(),
     };
 
-    raymarcher.render_images(ImageRenderConfiguration {
-        width: 128,
-        height: 128,
-        t_start: 0.0,
-        t_stop: 1.0,
-        t_step: 0.1,
-        image_name: |i| format!("./images/test_image{}.png", i),
-    });
-
-    //
-    // let raymarcher = RayMarcher {
-    //     object: Mandelbulb {
-    //         w: 1.0,
-    //         size: 2.0,
-    //     }
-    // };
-
-    // let raymarcher = RayMarcher {
-    //     object: Sphere {
-    //         center: (0, 0, 0).into(),
-    //         radius: 1.0,
-    //         color: (0, 0, 1).into(),
-    //     }
-    // };
-
-    // let mut raymarcher = RayMarcher {
-    //     object: ZSectioned {
-    //         z: 1.0,
-    //         object: Mandelbulb {
-    //             w: 0.0,
-    //             size: 2.0,
-    //         }
-    //     },
-    //     row: 0
-    // };
+    // raymarcher.render_images(ImageRenderConfiguration {
+    //     width: 128,
+    //     height: 128,
+    //     t_start: 0.0,
+    //     t_stop: 1.0,
+    //     t_step: 0.1,
+    //     image_name: |i| format!("./images/test_image{}.png", i),
+    // });
 
     let mut window = Window::new(
         "Raymarcher",
@@ -86,6 +59,7 @@ fn main() {
         row += 1;
         if row >= HEIGHT {
             row = 0;
+            println!("finished");
         }
     }
 }

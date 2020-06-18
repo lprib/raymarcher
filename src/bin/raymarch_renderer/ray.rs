@@ -17,7 +17,6 @@ pub fn cast_ray<O: SceneObject>(object: &O, point: Vec3, dir: Vec3, backplanes: 
     let mut ray_len = 0.0;
 
     loop {
-        // let (hit_index, radius) = scene.distance_to(current_point);
         let radius = object.distance_to(current_point, t);
         ray_len += radius;
         iterations += 1;

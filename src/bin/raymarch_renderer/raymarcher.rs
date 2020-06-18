@@ -47,9 +47,6 @@ impl<O: SceneObject> RayMarcher<O> {
             }
         }
         (1.0 / (aa_level * aa_level) as f64) * pixel_sum
-
-        // let ray_dir = Self::camera_ray_dir(x as f64, y as f64, Self::CAMERA_POS, Self::LOOK_AT, Self::ZOOM);
-        // self.trace(Self::CAMERA_POS, ray_dir)
     }
 
     fn trace(&self, point: Vec3, dir: Vec3, t: f64) -> Vec3 {
