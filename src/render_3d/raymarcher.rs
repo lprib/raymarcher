@@ -1,8 +1,7 @@
-use common::vec3::Vec3;
-use crate::scene::{SceneVec, Scene};
-use crate::ray::cast_ray;
-use crate::scene_object::{Sphere, SceneObject};
-use crate::fractals::Julia;
+use crate::vec3::Vec3;
+use super::ray::cast_ray;
+use super::scene_object::{Sphere, SceneObject};
+use super::fractals::Julia;
 use cgmath::Quaternion;
 use rayon::prelude::*;
 use std::path::Path;

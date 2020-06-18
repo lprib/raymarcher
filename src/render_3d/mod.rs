@@ -1,13 +1,13 @@
 use std::time::Duration;
 use minifb::{Key, Window, WindowOptions};
 use cgmath::Quaternion;
-
-use crate::raymarcher::{RayMarcher, ImageRenderConfiguration};
-use crate::fractals::{Julia, Mandelbulb};
-use crate::scene_object::Sphere;
-use crate::sectioned::{ZSectioned};
 use std::path::Path;
 use std::process::exit;
+
+use raymarcher::{RayMarcher, RayMarcherConfig, ImageRenderConfiguration};
+use fractals::{Julia, Mandelbulb};
+use scene_object::Sphere;
+use sectioned::{ZSectioned};
 
 mod raymarcher;
 mod scene;
@@ -16,18 +16,15 @@ mod ray;
 mod fractals;
 mod sectioned;
 
-const WIDTH: usize = 512;
-const HEIGHT: usize = 512;
-
-fn main() {
-    let mut buffer: Vec<u32> = vec![0; WIDTH * HEIGHT];
+pub fn main(width: usize, height: usize, config: RayMarcherConfig) {
+    let mut buffer: Vec<u32> = vec![0; width * height];
 
     let mut raymarcher = RayMarcher {
         object: Julia {
             c: Quaternion::new(-1.0, 0.2, 0.0, 0.0),
             size: 1.0,
         },
-        config: Default::default(),
+        config,
     };
 
     // raymarcher.render_images(ImageRenderConfiguration {
@@ -41,8 +38,8 @@ fn main() {
 
     let mut window = Window::new(
         "Raymarcher",
-        WIDTH,
-        HEIGHT,
+        width,
+        height,
         WindowOptions {
             resize: true,
             ..Default::default()
@@ -53,11 +50,11 @@ fn main() {
     let mut row = 0;
 
     while window.is_open() && !window.is_key_down(Key::Escape) {
-        raymarcher.draw(buffer.as_mut_slice(), row, (WIDTH, HEIGHT), 0.0);
-        window.update_with_buffer(&buffer, WIDTH, HEIGHT).unwrap();
+        raymarcher.draw(buffer.as_mut_slice(), row, (width, height), 0.0);
+        window.update_with_buffer(&buffer, width, height).unwrap();
 
         row += 1;
-        if row >= HEIGHT {
+        if row >= height {
             row = 0;
             println!("finished");
         }

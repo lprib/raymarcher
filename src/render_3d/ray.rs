@@ -1,6 +1,6 @@
-use common::vec3::Vec3;
-use crate::scene::{SceneVec, Scene};
-use crate::scene_object::SceneObject;
+use crate::vec3::Vec3;
+use super::scene::{SceneVec, Scene};
+use super::scene_object::SceneObject;
 
 const MAX_STEPS: u32 = 500;
 const HIT_THRESHOLD: f64 = 1E-4;

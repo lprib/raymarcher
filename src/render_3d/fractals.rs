@@ -1,5 +1,5 @@
-use crate::scene_object::SceneObject;
-use common::vec3::Vec3;
+use super::scene_object::SceneObject;
+use crate::vec3::Vec3;
 use cgmath::{Quaternion, InnerSpace, Zero, One};
 
 type Quaternion64 = Quaternion<f64>;

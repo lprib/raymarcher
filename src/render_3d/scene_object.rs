@@ -1,4 +1,4 @@
-use common::vec3::Vec3;
+use crate::vec3::Vec3;
 
 const EPS: f64 = 1.0E-10;
 

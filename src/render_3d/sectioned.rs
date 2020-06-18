@@ -1,5 +1,5 @@
-use crate::scene_object::SceneObject;
-use common::vec3::Vec3;
+use super::scene_object::SceneObject;
+use crate::vec3::Vec3;
 
 pub struct ZSectioned<O: SceneObject> {
     pub object: O,

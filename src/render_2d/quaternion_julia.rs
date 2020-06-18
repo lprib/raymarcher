@@ -1,4 +1,4 @@
-use common::vec3::Vec3;
+use crate::vec3::Vec3;
 use cgmath::{Quaternion, InnerSpace, Zero};
 
 type Quaternion64 = Quaternion<f64>;
