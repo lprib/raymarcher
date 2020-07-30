@@ -1,6 +1,6 @@
 use crate::vec3::Vec3;
 
-const EPS: f64 = 1.0E-12;
+const EPS: f64 = 1E-7;
 
 // T is the varied parameter
 pub trait SceneObject: Send + Sync {
@@ -14,6 +14,10 @@ pub trait SceneObject: Send + Sync {
         let z_plus = self.distance_to((p.x, p.y, p.z + EPS).into(), t);
         let z_minus = self.distance_to((p.x, p.y, p.z - EPS).into(), t);
 
+        // dbg!(Vec3::from((p.x, p.y + EPS, p.z)));
+        // dbg!(Vec3::from((p.x, p.y - EPS, p.z)));
+        // dbg!(p);
+        // dbg!(y_plus, y_minus);
         let x = x_plus - x_minus;
         let y = y_plus - y_minus;
         let z = z_plus - z_minus;
@@ -29,7 +33,12 @@ pub struct Sphere {
 
 impl SceneObject for Sphere {
     fn distance_to(&self, point: Vec3, _: f64) -> f64 {
-        ((point - self.center).magnitude() - self.radius).abs()
+        let point = Vec3 {
+            x: point.x % 5.0,
+            y: point.y,
+            z: point.z
+        };
+        (point - self.center).magnitude() - self.radius
     }
 
     fn get_color(&self, _: f64) -> Vec3 {

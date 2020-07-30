@@ -6,6 +6,7 @@ use cgmath::Quaternion;
 use rayon::prelude::*;
 use std::path::Path;
 use image::{DynamicImage, GenericImage, ImageFormat, Rgba};
+use std::process::exit;
 
 pub struct RayMarcher<O: SceneObject> {
     pub object: O,
@@ -50,21 +51,24 @@ impl<O: SceneObject> RayMarcher<O> {
 
     fn trace(&self, point: Vec3, dir: Vec3, t: f64) -> Vec3 {
         let res = cast_ray(&self.object, point, dir, self.config.backplane_positions, t);
+        let normal_backoff_dist = 1E-7;
         match res {
             Some(res) => {
                 let len = (res.hit_point - self.config.camera_pos).magnitude();
-                let len = len / 5.0 - 0.2;
+                let len = (len / 2.0).powi(2);
                 // return (len, len, len).into();
+                // return self.object.get_color(t);
 
                 // if there is a ray hit, do Phong lighting calculations
                 let light_vec = (self.config.light_pos - res.hit_point).normalized();
-                let norm = self.object.normal(res.hit_point, t);
+                let norm_point = res.hit_point - normal_backoff_dist * dir;
+                let norm = self.object.normal(norm_point, t);
                 let s_dot_n = norm.dot(light_vec);
-                return norm;
+                // return norm;
 
                 //specularity
-                let reflect_vec = (-light_vec).reflect(norm);
-                let view_vec = self.config.camera_pos - res.hit_point;
+                let reflect_vec = (-light_vec).reflect(norm).normalized();
+                let view_vec = (self.config.camera_pos - res.hit_point).normalized();
                 let r_dot_v = reflect_vec.dot(view_vec.normalized());
                 let specular_term = r_dot_v.powf(self.config.specular_shininess);
                 let specular_term = if r_dot_v > 0.0 { specular_term } else { 0.0 };
@@ -80,8 +84,8 @@ impl<O: SceneObject> RayMarcher<O> {
         let v = y as f64 / height as f64 * 2.0 - 1.0;
 
         let look_dir = (look_at - cam_pos).normalized();
-        let right_vec = Vec3::from((0, -1, 0)).cross(look_dir);
-        let down_vec = look_dir.cross(right_vec);
+        let right_vec = Vec3::from((0, -1, 0)).cross(look_dir).normalized();
+        let down_vec = look_dir.cross(right_vec).normalized();
 
         let zoomed_cam_pos = cam_pos + zoom * look_dir;
         let pix_pos = zoomed_cam_pos + u * right_vec + v * down_vec;
@@ -111,7 +115,8 @@ impl<O: SceneObject> RayMarcher<O> {
             image.put_pixel(x, y, buf[i]);
         }
 
-        image.save_with_format(file, ImageFormat::Png);
+        image.save_with_format(file, ImageFormat::Png)
+            .expect("could not save image");
     }
 
     pub fn render_images<F: Fn(u32) -> String>(&self, config: ImageRenderConfiguration<F>) {

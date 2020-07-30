@@ -1,10 +1,10 @@
 use crate::vec3::Vec3;
-use super::scene::{SceneVec, Scene};
 use super::scene_object::SceneObject;
 
-const MAX_STEPS: u32 = 500;
+const MAX_STEPS: u32 = 200;
 const HIT_THRESHOLD: f64 = 1E-4;
 
+#[derive(Debug)]
 pub struct RayResult {
     pub len: f64,
     pub hit_point: Vec3,
@@ -28,9 +28,9 @@ pub fn cast_ray<O: SceneObject>(object: &O, point: Vec3, dir: Vec3, backplanes: 
             });
         }
 
-        if iterations > MAX_STEPS {
-            return None;
-        }
+        // if iterations > MAX_STEPS {
+        //     return None;
+        // }
 
         if current_point.x.abs() > backplanes.x ||
             current_point.y.abs() > backplanes.y ||

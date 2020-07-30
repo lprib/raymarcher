@@ -1,19 +1,11 @@
 use std::time::Duration;
 use minifb::{Key, Window, WindowOptions};
-use cgmath::Quaternion;
-use std::path::Path;
-use std::process::exit;
 
 use raymarcher::{RayMarcher, RayMarcherConfig, ImageRenderConfiguration};
-use fractals::{Julia, Mandelbrot};
-use scene_object::Sphere;
-use sectioned::{ZSectioned};
-use crate::render_3d::fractals::Mandelbulb;
-use crate::render_3d::scene_object::SceneObject;
+use scene_object::SceneObject;
 
 pub mod raymarcher;
-mod scene;
-mod scene_object;
+pub mod scene_object;
 mod ray;
 pub mod fractals;
 mod sectioned;

@@ -4,9 +4,7 @@ use cgmath::{Quaternion, InnerSpace, Zero, One};
 
 type Quaternion64 = Quaternion<f64>;
 
-const JULIA_MAX_ITERS: i32 = 100;
-const COMPLEX_PLANE_SIZE: f64 = 2.0;
-const DISTANCE_ESTIMATE_MULTIPLIER: f64 = 0.5;
+const MAX_ITERS: i32 = 20;
 
 pub struct Julia {
     pub c: Quaternion64,
@@ -19,7 +17,7 @@ impl SceneObject for Julia {
         let mut dz = Quaternion64::new(1.0, 0.0, 0.0, 0.0);
         let mut count = 0;
 
-        while count < JULIA_MAX_ITERS {
+        while count < MAX_ITERS {
             let z_new = z * z + self.c;
             dz = 2.0 * z * dz;
             z = z_new;
@@ -51,7 +49,7 @@ impl SceneObject for Mandelbrot {
         let mut dz = Quaternion64::new(1.0, 0.0, 0.0, 0.0);
         let mut count = 0;
 
-        while count < JULIA_MAX_ITERS {
+        while count < MAX_ITERS {
             let z_new = z * z + c;
             dz = 2.0 * z * dz + Quaternion64::one();
             z = z_new;
@@ -78,14 +76,14 @@ pub struct Mandelbulb {
 
 impl SceneObject for Mandelbulb {
     fn distance_to(&self, point: Vec3, t: f64) -> f64 {
-        let power = 8.0;
+        let power = 4.0;
         let mut z = point;
         let mut dr = 1.0;
         let mut r = 0.0;
 
-        for i in 0..JULIA_MAX_ITERS {
+        for i in 0..MAX_ITERS {
             r = z.magnitude();
-            if r > 4.0 {
+            if r > 2.0 {
                 break;
             }
 
@@ -102,7 +100,7 @@ impl SceneObject for Mandelbulb {
             z = z + point;
         }
 
-        0.5 * r.ln() * r / dr
+        0.5 * r * r.ln() / dr
     }
 
     fn get_color(&self, t: f64) -> Vec3 {

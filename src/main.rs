@@ -4,10 +4,11 @@ use crate::vec3::Vec3;
 use crate::render_3d::raymarcher::RayMarcherConfig;
 use cgmath::Quaternion;
 use crate::render_3d::fractals::{Julia, Mandelbulb};
+use crate::render_3d::scene_object::Sphere;
 
 mod vec3;
 mod render_3d;
-mod render_2d;
+// mod render_2d;
 
 fn main() {
     let matches = App::new("Marcher")
@@ -131,6 +132,8 @@ fn main() {
             ..Default::default()
         };
 
+        println!("{:#?}", config);
+
         let mut c = matches.values_of("c").unwrap();
         let c = Quaternion::new(
             c.next().into_f64(),
@@ -141,15 +144,21 @@ fn main() {
 
         let width = matches.value_of("width").into_u32() as usize;
         let height = matches.value_of("height").into_u32() as usize;
-
+        
         let object = Julia {
             color: matches.values_of("object-color").into(),
             c
         };
 
-        let object = Mandelbulb {
-            color: matches.values_of("object-color").into()
-        };
+        // let object = Mandelbulb {
+        //     color: matches.values_of("object-color").into()
+        // };
+        //
+        // let object = Sphere {
+        //     radius: 1.0,
+        //     center: (0, 0, 0).into(),
+        //     color: (1, 0, 0).into()
+        // };
 
         render_3d::main(width, height, config, object);
     }
