@@ -1,4 +1,5 @@
 use minifb::{Key, Window, WindowOptions, MouseMode};
+use cgmath::Quaternion;
 
 mod julia_distance;
 mod quaternion_julia;
@@ -6,7 +7,7 @@ mod quaternion_julia;
 const WIDTH: usize = 1024;
 const HEIGHT: usize = 1024;
 
-fn main() {
+pub fn main(c: Quaternion<f64>) {
     let mut buffer: Vec<u32> = vec![0; WIDTH * HEIGHT];
 
     let mut window = Window::new(
@@ -30,7 +31,7 @@ fn main() {
         );
 
         // julia_distance::draw_ray2d(buffer.as_mut_slice(), mouse_scaled.0 as f64, mouse_scaled.1 as f64);
-        quaternion_julia::draw_quaternion_julia(buffer.as_mut_slice(), mouse_scaled.0 as f64, mouse_scaled.1 as f64);
+        quaternion_julia::draw_quaternion_julia(buffer.as_mut_slice(), mouse_scaled.0 as f64, mouse_scaled.1 as f64, c);
         window.update_with_buffer(&buffer, WIDTH, HEIGHT).unwrap();
     }
 }

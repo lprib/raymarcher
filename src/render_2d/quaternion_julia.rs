@@ -5,7 +5,7 @@ type Quaternion64 = Quaternion<f64>;
 
 static C: Quaternion64 = Quaternion::new(-0.2,0.6,0.2,0.2);
 
-const MAX_ITERATIONS: i32 = 30;
+const MAX_ITERATIONS: i32 = 15;
 const COMPLEX_PLANE_SIZE: f64 = 4.0;
 // scale the distance estimate by this amount to less marches of the ray are needed.
 const JULIA_DISTANCE_MULTIPLIER: f64 = 100.0;
@@ -18,12 +18,12 @@ fn get_z(x: f64, y: f64, px: f64, py: f64) -> Quaternion64 {
     // Quaternion::new(0.46361333450930964, 0.46361333450930964, 0.46361332450930964, 1.0)
 }
 
-fn get_val(z: Quaternion64) -> f64 {
+fn get_val(z: Quaternion64, c: Quaternion64) -> f64 {
     let mut count = 0;
     let mut z = z;
 
     loop {
-        z = z * z + C;
+        z = z * z + c;
         if z.magnitude() > 4.0 {
             break;
         }
@@ -82,7 +82,7 @@ fn get_val_mandelbrot(pos: Quaternion64) -> f64 {
     count as f64 / MAX_ITERATIONS as f64
 }
 
-pub fn draw_quaternion_julia(frame: &mut [u32], mouse_x: f64, mouse_y: f64) {
+pub fn draw_quaternion_julia(frame: &mut [u32], mouse_x: f64, mouse_y: f64, c: Quaternion64) {
     for (i, pix) in frame.iter_mut().enumerate() {
         let x = i % super::WIDTH;
         let y = i / super::WIDTH;
@@ -93,11 +93,11 @@ pub fn draw_quaternion_julia(frame: &mut [u32], mouse_x: f64, mouse_y: f64) {
         let mouse_plane_x = mouse_x / super::WIDTH as f64;
         let mouse_plane_y = mouse_y / super::HEIGHT as f64;
         // let val = distance_to2((x, y, 0.0).into());
-        let val = get_val(Quaternion64::new(x, y, 0.0, 0.0));
+        let val = get_val(Quaternion64::new(x, y, mouse_plane_x, mouse_plane_y), c);
         *pix = Vec3::from(val).into();
     }
 
-    trace_ray(frame, mouse_x, mouse_y);
+    //trace_ray(frame, mouse_x, mouse_y);
 }
 
 fn trace_ray(frame: &mut [u32], mouse_x: f64, mouse_y: f64) {

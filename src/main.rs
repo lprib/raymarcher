@@ -1,14 +1,14 @@
-use std::str::FromStr;
-use clap::{App, SubCommand, Arg, AppSettings, Values};
-use crate::vec3::Vec3;
-use crate::render_3d::raymarcher::RayMarcherConfig;
-use cgmath::Quaternion;
 use crate::render_3d::fractals::{Julia, Mandelbulb};
+use crate::render_3d::raymarcher::RayMarcherConfig;
 use crate::render_3d::scene_object::Sphere;
+use crate::vec3::Vec3;
+use cgmath::Quaternion;
+use clap::{App, AppSettings, Arg, SubCommand, Values};
+use std::str::FromStr;
 
-mod vec3;
+mod render_2d;
 mod render_3d;
-// mod render_2d;
+mod vec3;
 
 fn main() {
     let matches = App::new("Marcher")
@@ -16,6 +16,7 @@ fn main() {
         .author("Liam Pribis <jackpribis@gmail.com>")
         .about("Julia Set Raymarcher")
         .setting(AppSettings::SubcommandRequiredElseHelp)
+        /* #region   */
         .subcommand(SubCommand::with_name("3d")
             .about("Render 3d julia set in window")
             .arg(Arg::with_name("width")
@@ -115,6 +116,42 @@ fn main() {
                 .validator(positive_float_validator)
             )
         )
+        /* #endregion */
+        .subcommand(SubCommand::with_name("2d")
+            .about("render complex or quaternion julia sets in sliced 2D")
+            .arg(Arg::with_name("width")
+                .short("w")
+                .long("width")
+                .help("width of framebuffer")
+                .display_order(0)
+                .takes_value(true)
+                .required(true)
+                .validator(positive_int_validator)
+            )
+            .arg(Arg::with_name("height")
+                .short("h")
+                .long("height")
+                .help("height of framebuffer")
+                .display_order(1)
+                .takes_value(true)
+                .required(true)
+                .validator(positive_int_validator)
+            )
+            .arg(Arg::with_name("c")
+                .short("c")
+                .long("c")
+                .help("c value of julia set")
+                .display_order(2)
+                .require_equals(true)
+                .required(true)
+                .multiple(true)
+                .number_of_values(4)
+                .require_delimiter(true)
+                .value_delimiter(",")
+                .value_names(&["cw", "cx", "cy", "cz"])
+                .validator(float_validator)
+            )
+        )
         .get_matches();
 
     if let Some(matches) = matches.subcommand_matches("3d") {
@@ -144,10 +181,9 @@ fn main() {
 
         let width = matches.value_of("width").into_u32() as usize;
         let height = matches.value_of("height").into_u32() as usize;
-        
         let object = Julia {
             color: matches.values_of("object-color").into(),
-            c
+            c,
         };
 
         // let object = Mandelbulb {
@@ -162,10 +198,26 @@ fn main() {
 
         render_3d::main(width, height, config, object);
     }
+
+    if let Some(matches) = matches.subcommand_matches("2d") {
+        let width = matches.value_of("width").into_u32() as usize;
+        let height = matches.value_of("height").into_u32() as usize;
+        let mut c = matches.values_of("c").unwrap();
+        let c = Quaternion::new(
+            c.next().into_f64(),
+            c.next().into_f64(),
+            c.next().into_f64(),
+            c.next().into_f64(),
+        );
+
+        render_2d::main(c);
+    }
 }
 
 fn positive_int_validator(input: String) -> Result<(), String> {
-    let int = input.parse::<u32>().map_err(|e| "must be a valid integer")?;
+    let int = input
+        .parse::<u32>()
+        .map_err(|e| "must be a valid integer")?;
     if int > 0 {
         Ok(())
     } else {
@@ -174,7 +226,10 @@ fn positive_int_validator(input: String) -> Result<(), String> {
 }
 
 fn float_validator(input: String) -> Result<(), String> {
-    Ok(input.parse::<f64>().map(|_| ()).map_err(|_| "must be a valid float")?)
+    Ok(input
+        .parse::<f64>()
+        .map(|_| ())
+        .map_err(|_| "must be a valid float")?)
 }
 
 fn positive_float_validator(input: String) -> Result<(), String> {
@@ -212,7 +267,12 @@ impl ArgumentConversion for Option<&str> {
     }
 }
 
-fn optional_vec3_arg(name: &'static str, help: &'static str, default: &'static str, is_color: bool) -> Arg<'static, 'static> {
+fn optional_vec3_arg(
+    name: &'static str,
+    help: &'static str,
+    default: &'static str,
+    is_color: bool,
+) -> Arg<'static, 'static> {
     Arg::with_name(name)
         .long(name)
         .help(help)
